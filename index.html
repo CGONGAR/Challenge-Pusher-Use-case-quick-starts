@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>    <script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<body>
+<canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+
+<script>
+    const xValues = [100,200,300,400,500,600,700,800,900,1000];
+
+    const myChart = new Chart("myChart", {
+        type: "line",
+        data: {
+            labels: xValues,
+            datasets: [{
+                data: [860,1140,1060,1060,1070,1110,1330,2210,7830,2478],
+                borderColor: "red",
+                fill: false
+            }, {
+                data: [1600,1700,1700,1900,2000,2700,4000,5000,6000,7000],
+                borderColor: "green",
+                fill: false
+            }, {
+                data: [300,700,2000,5000,6000,4000,2000,1000,200,100],
+                borderColor: "blue",
+                fill: false
+            }]
+        },
+        options: {
+            legend: {display: false}
+        }
+    });
+
+    const pusher = new Pusher(
+        "a2174ecd73aba294c17f", // Replace with 'key' from dashboard
+        {
+            cluster: "eu", // Replace with 'cluster' from dashboard
+            forceTLS: true,
+        }
+    );
+
+    const channel = pusher.subscribe("barra");
+    channel.bind("new-barras", (datos) => {
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 10; j++) {
+                myChart.data.datasets[i].data[j] = datos[i][j];
+            }
+
+        }
+        /*
+        for (let i = 0; i < datos.length ; i++) {
+            //myChart.data.datasets[0].data[i] += datos[i];
+            myChart.data.datasets[0].data[i] += datos[i];
+            myChart.data.datasets[1].data[i] += datos[i];
+            myChart.data.datasets[2].data[i] += datos[i];
+        }
+
+         */
+        myChart.update();
+    });
+
+
+
+
+</script>
